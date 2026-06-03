@@ -1,0 +1,9 @@
+<h2>Score History</h2>
+
+{% for game in scores %}
+    <p>
+        Game {{ game.id }}
+        Win: {{ game.win }}
+        Faults: {{ game.fault }}
+    </p>
+{% endfor %}

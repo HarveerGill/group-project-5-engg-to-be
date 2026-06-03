@@ -2,6 +2,7 @@ import uuid
 
 from django.db import models
 
+from django.contrib.auth.models import User
 class Word(models.Model):
     uui = models.UUIDField(default=uuid.uuid4, editable=False)
     word = models.CharField(max_length=255, verbose_name='Word', unique=True)
@@ -10,6 +11,10 @@ class Word(models.Model):
         return str(self.word)
 
 class Game(models.Model):
+    # Secure Coding Principle:
+    # Associate every game with an authenticated user to enforce access control.
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+
     word = models.ForeignKey(Word, on_delete=models.PROTECT, verbose_name="Word")
     win = models.BooleanField(verbose_name='Win', default=False)
     session = models.TextField(verbose_name="Session")

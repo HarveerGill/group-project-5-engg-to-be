@@ -17,9 +17,17 @@ from django.urls import path
 
 from hangMansApp import views
 
+from django.contrib.auth import views as auth_views
+
 urlpatterns = [
     path('', views.Start, name='starting'),
     path('update/word', views.updateWord, name='updated-word-game'),
     path('<uuid:uui>', views.playShare, name='play-game-share'),
     path('generate/word', views.generateWord, name='generate-word'),
+    
+    path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('history/',views.score_history,name='history'
+),
+
 ]

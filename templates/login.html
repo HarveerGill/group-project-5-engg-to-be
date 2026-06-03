@@ -1,0 +1,13 @@
+#Security Control:
+#CSRF token prevents cross-site request forgery attacks.
+
+<h2>Login</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit">
+        Login
+    </button>
+</form>

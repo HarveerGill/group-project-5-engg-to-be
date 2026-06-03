@@ -7,6 +7,17 @@ from django.shortcuts import render
 from hangMansApp import models
 
 
+from django.contrib.auth.decorators import login_required
+
+# Secure Coding Principle:
+# login_required prevents unauthorised access to score history.
+@login_required
+def score_history(request):
+
+    scores = models.Game.objects.filter(user=request.user)
+    return render(request, 'score_history.html', {'scores': scores})
+
+
 def Start(request):
     forRandomId = []
     for r in models.Word.objects.all():
@@ -41,6 +52,15 @@ def updateWord(request):
             except:
                 pass
         game = models.Game.objects.filter(session=session, id=int(gameId))
+        
+        # Secure Coding Principle:
+        # Enforce ownership of game records by linking them to authenticated users.
+        if request.user.is_authenticated:
+                game = models.Game.objects.create(session=session, word_id=wordId, user=request.user)
+        else:
+                game = models.Game.objects.create(session=session, word_id=wordId)
+            
+
         if game.count() == 0:
             game = models.Game.objects.create(session=session, word_id=wordId)
         else:
@@ -66,6 +86,7 @@ def updateWord(request):
             if game.fault >= 6:
                 return JsonResponse({'lose': True, 'word': word.word.upper()})
             return JsonResponse({'gameId': game.id, 'fault': game.fault + 1, 'win': False, 'letter': letter})
+            
 
 def playShare(request, uui):
     print(uui)
