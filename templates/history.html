@@ -1,9 +1,20 @@
 <h2>Score History</h2>
 
-{% for game in scores %}
-    <p>
-        Game {{ game.id }}
-        Win: {{ game.win }}
-        Faults: {{ game.fault }}
-    </p>
-{% endfor %}
+<p><a href="{% url 'starting' %}">Back to game</a></p>
+
+{% if scores %}
+    {% for game in scores %}
+        <div>
+            <p>
+                <strong>Game {{ game.id }}</strong><br>
+                Word: {{ game.word.word }}<br>
+                Win: {{ game.win }}<br>
+                Faults: {{ game.fault }}<br>
+                Hints used: {{ game.hints_used }}<br>
+                Share: <a href="{% url 'share-score' game.share_id %}">{% url 'share-score' game.share_id %}</a>
+            </p>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No score history is available yet.</p>
+{% endif %}

@@ -1,0 +1,14 @@
+<h2>Shared Hangman Score</h2>
+
+<p>This page is read-only and can be viewed without logging in.</p>
+
+<p>
+    Player: {% if game.user %}{{ game.user.username }}{% else %}Anonymous{% endif %}<br>
+    Game: {{ game.id }}<br>
+    Win: {{ game.win }}<br>
+    Faults: {{ game.fault }}<br>
+    Hints used: {{ game.hints_used }}<br>
+    Completed/updated: {{ game.updated_at }}
+</p>
+
+<p><a href="{% url 'starting' %}">Play Hangman</a></p>

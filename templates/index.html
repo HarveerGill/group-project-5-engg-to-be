@@ -51,6 +51,12 @@
                 <li class="menu-active"><a href="{% url 'starting' %}">Home</a></li>
                 <li><a href="#services">Play</a></li>
                 <li><a href="#invite">Invite your friend</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'history' %}">Score History</a></li>
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                {% endif %}
             </ul>
         </nav><!-- #nav-menu-container -->
     </div>
@@ -67,6 +73,11 @@
             <a href="#services" class="btn-get-started scrollto">Play Now</a>
             <a href="#invite" class="btn-get-started scrollto">Invite your friend</a>
         </div>
+        <p style="margin-top: 15px; color: #0c2e8a; font-weight: 700;">Difficulty: 
+            <a href="/?difficulty=easy">Easy</a> | 
+            <a href="/?difficulty=medium">Medium</a> | 
+            <a href="/?difficulty=hard">Hard</a>
+        </p>
     </div>
 
 
@@ -170,6 +181,8 @@
                                    style="height: 40px; width: 40px; color: white">Z</a>
                             </span>
                             </div>
+                            <a id="hintButton" onclick="getHint()" class="btn btn-warning" style="font-size: 18px; margin-top: 25px; margin-left: 15px; color: white">
+                                <i class="fa fa-lightbulb-o"></i> Hint</a>
                             <a hidden id="playAgain" style="font-size: 25px; margin-top: 25px; margin-left: 55px" href="{% url 'starting' %}">
                                 <i class="fa fa-gamepad"></i> Play Again</a>
                         </div>
@@ -251,6 +264,21 @@
 <script src="{% static 'js/main.js' %}"></script>
 
 <script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
     function generateNewWord() {
         $.ajax({
             url: '{% url "generate-word" %}',
@@ -264,6 +292,29 @@
             }
         });
     }
+    function getHint() {
+        gameId = $('#gameId').val();
+        $.ajax({
+            url: '{% url "hint" %}',
+            data: {'gameId': gameId},
+            type: 'post',
+            headers: {'X-CSRFToken': getCookie('csrftoken')},
+            success: function (data) {
+                $('#gameId').val(data.gameId);
+                $('#hintButton').addClass('disabled');
+                for (let i = 0; i < data.wordArray.length; i++) {
+                    if (data.wordArray[i] !== '') {
+                        $('#wordLetter' + (i + 1).toString()).html(data.wordArray[i])
+                    }
+                }
+                alert('Hint revealed: ' + data.hint.toUpperCase());
+            },
+            error: function (xhr) {
+                alert(xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : 'Hint unavailable.');
+            }
+        });
+    }
+
     function wordUpd(letter) {
         var id = "{{ wordId }}";
         fault = $('#fault').val();
@@ -271,7 +322,8 @@
         $.ajax({
             url: '{% url "updated-word-game" %}',
             data: {'wordId': id, 'faults': fault, 'letter': letter, 'gameId': gameId},
-            type: 'get',
+            type: 'post',
+            headers: {'X-CSRFToken': getCookie('csrftoken')},
             success: function (data) {
                 if (data.lose) {
                     $('#imageMan').attr('src', 'static/hangmanpict/7.jpg');
@@ -309,6 +361,9 @@
                         }
                     }
                 }
+            },
+            error: function (xhr) {
+                alert(xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : 'Invalid game request.');
             }
         });
 

@@ -126,3 +126,21 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 SESSION_COOKIE_AGE = 1200 #20min
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
+
+# COMP3310 secure configuration notes:
+# Environment variables avoid hard-coding secrets in production deployments.
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', SECRET_KEY)
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+LOGIN_URL = '/login/'
+
+# Cookie and browser-side protections. Secure cookies are enabled automatically when DEBUG=False.
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = False  # JavaScript needs the token for same-site AJAX POST requests.
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True
