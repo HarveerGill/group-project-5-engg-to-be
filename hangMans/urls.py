@@ -1,9 +1,11 @@
 from django.urls import path
+from django.contrib import admin
 from django.contrib.auth import views as auth_views
 
 from hangMansApp import views
 
 urlpatterns = [
+    path('admin/', admin.site.urls),
     path('', views.Start, name='starting'),
     path('update/word', views.updateWord, name='updated-word-game'),
     path('hint/', views.get_hint, name='hint'),

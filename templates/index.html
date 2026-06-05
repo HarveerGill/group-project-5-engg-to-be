@@ -247,6 +247,12 @@
 
 <!-- JavaScript Libraries -->
 <script src="{% static 'lib/jquery/jquery.min.js' %}"></script>
+<script>
+    // Fallback for local copies where the starter project does not include static/lib/jquery.
+    if (typeof window.jQuery === 'undefined') {
+        document.write('<script src="https://code.jquery.com/jquery-3.6.0.min.js"><\/script>');
+    }
+</script>
 <script src="{% static 'lib/jquery/jquery-migrate.min.js' %}"></script>
 <script src="{% static 'lib/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 <script src="{% static 'lib/easing/easing.min.js' %}"></script>
